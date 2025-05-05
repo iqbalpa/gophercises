@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -24,7 +25,7 @@ func main() {
 	
 	limit := 30
 	if kv[limitVar] != "" {
-		limit, _ = strconv .Atoi(kv[limitVar])
+		limit, _ = strconv.Atoi(kv[limitVar])
 	}
 	csvPath := kv[csvVar]
 	if csvPath == "" {
@@ -33,17 +34,26 @@ func main() {
 
 	counter := 0
 	csvRecords := readCsvFile(csvPath)
-	for i,lst := range csvRecords {
-		q, ca := lst[0], lst[1]
-		fmt.Printf("Problem #%d: %s = ", (i+1), q)
-		a, _ := reader.ReadString('\n')
-		a = strings.Trim(a, "\n")
 
-		cai, _ := strconv.Atoi(ca)
-		ai, _ := strconv.Atoi(a)
-		if cai == ai {
-			counter += 1
-		} 
+	// init timer
+	timer := time.NewTimer(time.Duration(limit) * time.Second)
+
+	loop: for i, rec := range csvRecords {
+		select {
+			case <- timer.C:
+				break loop
+			default:
+				q, ca := rec[0], rec[1]
+				fmt.Printf("Problem #%d: %s = ", (i+1), q)
+				a, _ := reader.ReadString('\n')
+				a = strings.Trim(a, "\n")
+
+				cai, _ := strconv.Atoi(ca)
+				ai, _ := strconv.Atoi(a)
+				if cai == ai {
+					counter += 1
+				} 
+		}
 	}
 
 	fmt.Printf("You scored %d out of %d\n", counter, len(csvRecords))
