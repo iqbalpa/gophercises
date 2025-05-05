@@ -22,7 +22,10 @@ func main() {
 	args := os.Args[1:]
 	kv := utils.ArgParser(args)
 	
-	// limit := kv["limit"]
+	limit := 30
+	if kv[limitVar] != "" {
+		limit, _ = strconv .Atoi(kv[limitVar])
+	}
 	csvPath := kv[csvVar]
 	if csvPath == "" {
 		csvPath = "./problems.csv"
@@ -40,7 +43,7 @@ func main() {
 		ai, _ := strconv.Atoi(a)
 		if cai == ai {
 			counter += 1
-		}
+		} 
 	}
 
 	fmt.Printf("You scored %d out of %d\n", counter, len(csvRecords))
